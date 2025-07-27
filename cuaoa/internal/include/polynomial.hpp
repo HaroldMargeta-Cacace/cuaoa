@@ -15,10 +15,10 @@
 
 #ifndef POLYNOMIAL_HPP
 #define POLYNOMIAL_HPP
-
+#include <cstddef>    // for std::size_t
 #include <vector>
 struct Polynomial {
-  std::vector<size_t> keys;
+  std::vector<std::size_t> keys;
   std::vector<double> values;
 };
 
@@ -26,3 +26,4 @@ Polynomial makePolynomialsfromAdjacencyMatrix(const double *flat,
                                               size_t dimension);
 
 #endif
+
