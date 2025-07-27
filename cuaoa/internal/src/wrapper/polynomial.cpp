@@ -21,11 +21,11 @@
 
 extern "C" {
 
-PolynomialResult makePolynomialsWrapper(const double *flat, size_t dimension) {
+PolynomialResult makePolynomialsWrapper(const double *flat, std::size_t dimension) {
   Polynomial polynomial = makePolynomialsfromAdjacencyMatrix(flat, dimension);
   PolynomialResult result;
   result.keysSize = polynomial.keys.size();
-  result.keys = new size_t[polynomial.keys.size()];
+  result.keys = new std::size_t[polynomial.keys.size()];
   std::copy(polynomial.keys.begin(), polynomial.keys.end(), result.keys);
   result.valuesSize = polynomial.values.size();
   result.values = new double[polynomial.values.size()];
