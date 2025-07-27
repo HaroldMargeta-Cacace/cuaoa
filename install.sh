@@ -49,3 +49,27 @@ else
     echo -e "${RED}${CROSS_MARK} Wheel file not found.${NC}"
     exit 1
 fi
+
+# Path to compile_flags.txt (adjust if needed)
+COMPILE_FLAGS_FILE="cuaoa/internal/compile_flags.txt"
+
+# Detect CUDA version (major only)
+CUDA_VERSION_STR=$($NVCC --version | grep "release" | sed -E 's/.*release ([0-9]+)\..*/\1/')
+CUDA_VERSION=${CUDA_VERSION_STR:-11}  # fallback to 11 if detection fails
+
+echo "Detected CUDA major version: $CUDA_VERSION"
+
+# Base flags to keep (you may want to preserve these or keep as-is)
+BASE_FLAGS=$(cat "$COMPILE_FLAGS_FILE" | grep -v -E 'gencode=arch=compute_8[9|0],code=sm_8[9|0]')
+
+# Start rewriting file with base flags only
+echo "$BASE_FLAGS" > "$COMPILE_FLAGS_FILE"
+
+# Append new arch flags only if CUDA >= 12
+if [ "$CUDA_VERSION" -ge 12 ]; then
+    echo "-gencode=arch=compute_89,code=sm_89" >> "$COMPILE_FLAGS_FILE"
+    echo "-gencode=arch=compute_90,code=sm_90" >> "$COMPILE_FLAGS_FILE"
+    echo "Appended CUDA 12+ architectures to compile_flags.txt"
+else
+    echo "CUDA version < 12, skipping newer architecture flags"
+fi
