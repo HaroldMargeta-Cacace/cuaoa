@@ -50,6 +50,18 @@ else
     exit 1
 fi
 
+# Ensure CONDA_PREFIX is defined
+if [[ -z "$CONDA_PREFIX" ]]; then
+    echo -e "${YELLOW}Warning: CONDA_PREFIX is not set. Trying to infer from conda...${NC}"
+    CONDA_PREFIX=$(conda info --base 2>/dev/null)
+    if [[ -z "$CONDA_PREFIX" ]]; then
+        echo -e "${RED}Error: Could not determine CONDA_PREFIX. Please activate your conda environment first.${NC}"
+        exit 1
+    else
+        echo -e "${GREEN}Detected CONDA_PREFIX as $CONDA_PREFIX${NC}"
+    fi
+fi
+
 # Path to compile_flags.txt (adjust if needed)
 COMPILE_FLAGS_FILE="cuaoa/internal/compile_flags.txt"
 
@@ -59,11 +71,14 @@ CUDA_VERSION=${CUDA_VERSION_STR:-11}  # fallback to 11 if detection fails
 
 echo "Detected CUDA major version: $CUDA_VERSION"
 
-# Base flags to keep (you may want to preserve these or keep as-is)
-BASE_FLAGS=$(cat "$COMPILE_FLAGS_FILE" | grep -v -E 'gencode=arch=compute_8[9|0],code=sm_8[9|0]')
+# Read base flags and remove outdated gencode lines and $CONDA_PREFIX placeholder
+BASE_FLAGS=$(grep -v -E 'gencode=arch=compute_8[9|0],code=sm_8[9|0]' "$COMPILE_FLAGS_FILE" | grep -v '\-I\$CONDA_PREFIX/include')
 
-# Start rewriting file with base flags only
+# Overwrite the file with cleaned base flags
 echo "$BASE_FLAGS" > "$COMPILE_FLAGS_FILE"
+
+# Append the actual CONDA_PREFIX include path
+echo "-I${CONDA_PREFIX}/include" >> "$COMPILE_FLAGS_FILE"
 
 # Append new arch flags only if CUDA >= 12
 if [ "$CUDA_VERSION" -ge 12 ]; then
