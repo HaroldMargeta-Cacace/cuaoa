@@ -13,18 +13,20 @@
  * limitations under the License.
  */
 
+#include <vector>
+#include <cstddef>        // for std::size_t
+#include <map>            // or unordered_map if used
+#include <algorithm>      // for std::copy or std::transform if used
 #include "polynomial.hpp"
-#include <map>
-#include <ranges>
 
 Polynomial makePolynomialsfromAdjacencyMatrix(const double *flat,
-                                              size_t dimension) {
-  std::map<size_t, double> polynomial;
+                                              std::size_t dimension) {
+  std::map<std::size_t, double> polynomial;
 
-  for (size_t i = 0; i < dimension; i++) {
+  for (std::size_t i = 0; i < dimension; i++) {
     double contrib = 0.0;
-    for (size_t j = 0; j < dimension; j++) {
-      size_t index = i * dimension + j;
+    for (std::size_t j = 0; j < dimension; j++) {
+      std::size_t index = i * dimension + j;
       double value = flat[index];
 
       bool hasValue = value != 0;
@@ -35,7 +37,7 @@ Polynomial makePolynomialsfromAdjacencyMatrix(const double *flat,
       }
 
       if (hasValue) {
-        size_t key = (1 << i) + (1 << j);
+        std::size_t key = (1 << i) + (1 << j);
         if (polynomial.count(key) > 0) {
           polynomial[key] += value;
         } else {
@@ -54,11 +56,15 @@ Polynomial makePolynomialsfromAdjacencyMatrix(const double *flat,
     }
   }
 
-  auto keys = std::views::keys(polynomial);
-  auto vals = std::views::values(polynomial);
+  std::vector<std::size_t> keys;
+  std::vector<double> vals;
+  for (const auto& [k, v] : polynomial) {
+      keys.push_back(k);
+      vals.push_back(v);
+  }
 
   Polynomial pols;
-  pols.keys = std::vector<size_t>{keys.begin(), keys.end()};
-  pols.values = std::vector<double>{vals.begin(), vals.end()};
+  pols.keys = std::vector<std::size_t>(keys.begin(), keys.end());
+  pols.values = std::vector<double>(vals.begin(), vals.end());
   return pols;
 }
