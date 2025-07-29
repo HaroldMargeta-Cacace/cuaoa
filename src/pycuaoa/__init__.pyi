@@ -82,9 +82,9 @@ class CUAOA:
     def get_polynomial(self) -> Polynomial: ...
     def get_num_nodes(self) -> uint64: ...
 
-# BruteForce
+# BruteForce (typo; need to fix all instances later)
 
-class BruteForce:
+class BruteFroce:
     def __init__(
         self,
         adjacency_matrix: NDArray[float64],
