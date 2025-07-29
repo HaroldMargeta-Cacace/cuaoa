@@ -37,7 +37,7 @@ Before proceeding with the installation, ensure the following tools are installe
 - [pip](https://pip.pypa.io/en/stable/installing/): Necessary for Python package installations.
 - [conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html): A crucial tool for environment and package management.
 - [uv](https://docs.astral.sh/uv/): Another crucial tool for environment and package management.
-- [Python >= 3.11](https://www.python.org/downloads/): Required for running the Python code. Other versions may work but have not been tested.
+- [Python = 3.11](https://www.python.org/downloads/): Required for running the Python code. Other versions will not work due to incompatibility with maturin.
 
 ### Conda Environment Requirement
 
